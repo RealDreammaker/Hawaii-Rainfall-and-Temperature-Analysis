@@ -40,16 +40,17 @@ def home():
     """Home page"""
     start = "start"
     end = "end"
-    return (f"Welcome to Climate App<br/>"
+    return (f"Welcome to Climate App! <br/>"
            f"-----------------------<br/>"
            f"Available routes: <br/>"
            f"/api/v1.0/precipitation<br/>"
            f"/api/v1.0/stations<br/>"
            f"/api/v1.0/tobs<br/>"
            f"/api/v1.0/< startdate ><br/>"
-           f"/api/v1.0/< startdate >/< enddate >"
+           f"/api/v1.0/< startdate >/< enddate > <br/>"
+           f"-----------------------<br/>"
            f"<br/>"
-           f"Date format: MM-DD-YYYY")
+           f"Date format: M-D-YYYY")
 
 @app.route('/api/v1.0/precipitation')
 def precipitation():
@@ -93,13 +94,13 @@ def stations():
 def tobs():        
     """Temperature observations of the most active station for the last year of data"""   
     most_active_station = 'USC00519281'
-    recent_date = dt.datetime(2017,8,23)
-    start_date = recent_date - dt.timedelta(days = 366) 
+    recent_date = dt.date(2017,8,23)
+    start_date = recent_date - dt.timedelta(days = 365) 
     
     session = Session(engine)
     results  = session.query(Measurement.date, Measurement.tobs).\
         filter(Measurement.station == most_active_station).\
-        filter(Measurement.date > start_date).all()
+        filter(Measurement.date >= start_date).all()
     session.close()  
     
     temperature = []
@@ -130,7 +131,7 @@ def start(start):
     
     for item in loop:  
         result = session.query(item).\
-            filter(Measurement.date > start_date).all()
+            filter(Measurement.date >= start_date).all()
         
         # add TMIN/TMAX/TAVG to the dictionary
         output[labels[loop.index(item)]] = result[0][0]
