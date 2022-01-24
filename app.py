@@ -26,6 +26,11 @@ Base.classes.keys()
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 
+# define function to convert date from mm-dd-yyyy format to sql default date format
+def date_converter(strdate):
+    td = dt.datetime.strptime(strdate, '%m-%d-%Y')
+    return dt.date(td.year, td.month, td.day)
+
 #################################################
 # Flask Setup
 #################################################
@@ -112,39 +117,17 @@ def tobs():
         
     return jsonify(temperature)
     
-@app.route('/api/v1.0/<start>')
-def start(start):
-    """calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date."""
-    # convert string given to date
-    start_date = dt.datetime.strptime(start, '%m-%d-%Y') - dt.timedelta(days = 1)
-    
-    # assigning variables, getting ready for query
-    lowest_temp = func.min(Measurement.tobs)
-    highest_temp = func.max(Measurement.tobs)
-    average_temp = func.round(func.avg(Measurement.tobs),2)
-    loop = [lowest_temp, highest_temp, average_temp]
-    labels = ["TMIN" , "TMAX", "TAVG"]
-    output = {}
-    
-    # initiate session for query data from table
-    session = Session(engine)
-    
-    for item in loop:  
-        result = session.query(item).\
-            filter(Measurement.date >= start_date).all()
-        
-        # add TMIN/TMAX/TAVG to the dictionary
-        output[labels[loop.index(item)]] = result[0][0]
-        
-    session.close()       
-    return jsonify(output)        
 
+@app.route('/api/v1.0/<start>', defaults = {'end' : None})
 @app.route('/api/v1.0/<start>/<end>')
-def start_end(start, end):           
-    """calculate TMIN, TAVG, and TMAX for dates between the start and end date inclusively"""
+def start_end(start, end=None):           
+    """When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.
+
+When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive."""
     # convert string given to date
-    start_date = dt.datetime.strptime(start, '%m-%d-%Y') - dt.timedelta(days = 1)
-    end_date = dt.datetime.strptime(end, '%m-%d-%Y')
+    start_date = date_converter(start)
+    if end is not None:
+        end_date = date_converter(end)
     
     # assigning variables, getting ready for query
     lowest_temp = func.min(Measurement.tobs)
@@ -157,25 +140,21 @@ def start_end(start, end):
     # initiate session for query data from table
     session = Session(engine)
     for item in loop:
-        result = session.query(item).\
-            filter(Measurement.date > start_date).\
-            filter(Measurement.date <= end_date).all()
-        
+        if end is not None:
+            result = session.query(item).\
+                filter(Measurement.date >= start_date).\
+                filter(Measurement.date <= end_date).all()
+        else:
+            result = session.query(item).\
+                filter(Measurement.date >= start_date).all()
+            
         # add TMIN/TMAX/TAVG to the dictionary
         output[labels[loop.index(item)]] = result[0][0]
     
-    # add query details          
-    output["3. Number of Observations"] = len(session.query(Measurement.date).\
-            filter(Measurement.date > start_date).\
-            filter(Measurement.date <= end_date).all())
-         
-    output["1. Start date"] = start
-    output["2. End date"] = end
-    
+  
     session.close() 
     
-    return jsonify(output)        
-
+    return jsonify(output)   
 
 if __name__ == "__main__":
     app.run(debug = True)
