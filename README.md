@@ -6,11 +6,11 @@ I've decided to treat myself to a long holiday vacation in Honolulu, Hawaii! To 
 
 SQLAlchemy ORM queries, Pandas, and Matplotlibcomplete was utilised for climate analysis and data exploration. For details, see [notebook](climate_exploratory_analysis.ipynb)
 </br>
-### Precipication bar chart:
-![Precipication](Images\precipitation.png)
-</br>
-### Station histogram:
-![stations](Images\station-histogram.png)
+### Precipication bar chart:</br>
+<img src="Images\precipitation.png">
+
+### Station histogram:</br>
+<img src="Images\station-histogram.png">
 
 - - -
 
