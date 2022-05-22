@@ -47,12 +47,15 @@ def home():
     end = "end"
     return (f"Welcome to Climate App! <br/>"
            f"-----------------------<br/>"
-           f"Available routes: <br/>"
-           f"/api/v1.0/precipitation<br/>"
-           f"/api/v1.0/stations<br/>"
-           f"/api/v1.0/tobs<br/>"
-           f"/api/v1.0/< startdate ><br/>"
-           f"/api/v1.0/< startdate >/< enddate > <br/>"
+           f"Available routes (add to home route): <br/>"
+           f"- Display all precipitation:           /api/v1.0/precipitation<br/>"
+           f"- Display all stations:                /api/v1.0/stations<br/>"
+           f"- Temperature observations of <br/>"
+           f"the most active station one year ago   /api/v1.0/tobs<br/>"
+           f"- Find the min,max,average temperature <br/>"
+           f"given the start date                   /api/v1.0/< startdate ><br/>"
+           f"- Find the min,max,average temperature <br/>"
+           f"given the start date and end date      /api/v1.0/< startdate >/< enddate > <br/>"
            f"-----------------------<br/>"
            f"<br/>"
            f"Date format: M-D-YYYY")
@@ -97,7 +100,7 @@ def stations():
         
 @app.route('/api/v1.0/tobs')
 def tobs():        
-    """Temperature observations of the most active station for the last year of data"""   
+    """Temperature observations of the most active station one year ago"""   
     most_active_station = 'USC00519281'
     recent_date = dt.date(2017,8,23)
     start_date = recent_date - dt.timedelta(days = 365) 
@@ -139,7 +142,10 @@ When given the start and the end date, calculate the TMIN, TAVG, and TMAX for da
     
     # initiate session for query data from table
     session = Session(engine)
+    
+    
     for item in loop:
+        # if no end date provided in the route, perform first query
         if end is not None:
             result = session.query(item).\
                 filter(Measurement.date >= start_date).\
