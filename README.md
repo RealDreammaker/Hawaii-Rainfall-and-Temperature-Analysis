@@ -4,9 +4,9 @@
 
 I've decided to treat myself to a long holiday vacation in Honolulu, Hawaii! To help with the trip planning, I need to do some climate analysis on the area. 
 
-SQLAlchemy ORM queries, Pandas, and Matplotlibcomplete was utilised for climate analysis and data exploration. For details, see [notebook](climate_exploratory_analysis.ipynb)
+SQLAlchemy ORM queries, Pandas, and Matplotlib were utilised for climate analysis and data exploration. For details, see [notebook](climate_exploratory_analysis.ipynb)
 </br>
-### Precipication bar chart:</br>
+### Precipitation bar chart:</br>
 <img src="Images\precipitation.png" width="50%" height="50%">
 
 ### Station histogram:</br>
@@ -55,7 +55,7 @@ Unpaired or independent t-test was used to conclude the difference between the m
 ### Temperature Analysis II
 
 * I am looking to take a trip from August first to August seventh of this year, but worried that the weather will be less than ideal. Using historical data in the dataset, I found out what the temperature has previously looked like.
-* I plotted the min, avg, and max temperature.
+* I plotted the minimum, average, and maximum temperature.
 Note: y error bar (YERR) is the peak-to-peak (TMAX-TMIN) value:</br>
 ![temperature](Images/temperature.png)
 
